@@ -13,6 +13,7 @@
 
 #include "xsimd_base.hpp"
 #include "xsimd_neon_bool.hpp"
+#include "xsimd_neon_int_base.hpp"
 
 namespace xsimd
 {
@@ -21,70 +22,26 @@ namespace xsimd
      *********************/
 
     template <>
-    struct simd_batch_traits<batch<int8_t, 16>>
+    class batch<int8_t, 16> : public neon_int_batch<int8_t, uint8_t, int8x16_t, 16>
     {
-        using value_type = int8_t;
-        static constexpr std::size_t size = 16;
-        using batch_bool_type = batch_bool<int8_t, 16>;
-        static constexpr std::size_t align = XSIMD_DEFAULT_ALIGNMENT;
-    };
-
-    template <>
-    class batch<int8_t, 16> : public simd_batch<batch<int8_t, 16>>
-    {
-        using simd_type = int8x16_t;
-
     public:
 
-        using base_type = simd_batch<batch<int8_t, 16>>;
-
-        batch();
         explicit batch(int8_t d);
-
-        template <class... Args, class Enable = detail::is_array_initializer_t<int8_t, 16, Args...>>
-        batch(Args... args);
         explicit batch(const int8_t* src);
 
-        batch(const int8_t* src, aligned_mode);
-        batch(const int8_t* src, unaligned_mode);
-
-        explicit batch(const char* src);
-        batch(const char* src, aligned_mode);
-        batch(const char* src, unaligned_mode);
-
-        batch(const simd_type& rhs);
-        batch& operator=(const simd_type& rhs);
-
-        operator simd_type() const;
-
         batch& load_aligned(const int8_t* src);
-        batch& load_unaligned(const int8_t* src);
-
         batch& load_aligned(const uint8_t* src);
-        batch& load_unaligned(const uint8_t* src);
 
         void store_aligned(int8_t* dst) const;
-        void store_unaligned(int8_t* dst) const;
-
         void store_aligned(uint8_t* dst) const;
-        void store_unaligned(uint8_t* dst) const;
 
-        using base_type::load_aligned;
         using base_type::load_unaligned;
-        using base_type::store_aligned;
         using base_type::store_unaligned;
 
         XSIMD_DECLARE_LOAD_STORE_INT8(int8_t, 16);
 
         int8_t operator[](std::size_t index) const;
-
-    private:
-
-        simd_type m_value;
     };
-
-    batch<int8_t, 16> operator<<(const batch<int8_t, 16>& lhs, int8_t rhs);
-    batch<int8_t, 16> operator>>(const batch<int8_t, 16>& lhs, int8_t rhs);
 
     /************************************
      * batch<int8_t, 16> implementation *
